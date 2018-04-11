@@ -106,12 +106,22 @@ namespace PCOE {
             throw ConfigurationError("MonteCarloPredictor does not have a model!");
         }
 
-        // Create a random number generator
-        std::random_device rDevice;
-        std::mt19937 generator(rDevice());
-
+        // Create a random number generator if running sequentially
+        #ifndef USING_OPENMP
+					std::random_device rDevice;
+        	std::mt19937 generator(rDevice());
+				#endif
+	
         // For each sample
+				// Invoke in parallel with OpenMP
+				#pragma omp parallel for shared(state, data)
         for (unsigned int sample = 0; sample < numSamples; sample++) {
+						#ifdef USING_OPENMP
+        			// Create a random number generator, each thread needs its own (CANNOT be shared)
+        			std::random_device rDevice;
+        			std::mt19937 generator(rDevice());
+						#endif
+
             // 1. Sample the state
             // Create state vector
             Matrix xMean(pModel->getNumStates(), 1);
