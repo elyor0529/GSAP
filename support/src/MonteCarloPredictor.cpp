@@ -114,7 +114,7 @@ namespace PCOE {
 	
         // For each sample
 				// Invoke in parallel with OpenMP
-				#pragma omp parallel for shared(state, data)
+				#pragma omp parallel for shared(data)
         for (unsigned int sample = 0; sample < numSamples; sample++) {
 						#ifdef USING_OPENMP
         			// Create a random number generator, each thread needs its own (CANNOT be shared)
